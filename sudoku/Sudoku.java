@@ -31,8 +31,9 @@ class Sudoku {
     // on return TRUE, board contains a solution
     // on FALSE, board is the same as what was passed in
     static public boolean find_solution(int[][] board, int y, int x) {
+        if (!is_valid(board)) return false;
         if (x == 9) return find_solution(board, y + 1, 0);
-        if (y == 9) return is_valid(board);
+        if (y == 9) return true;
         if (board[y][x] != 0) return find_solution(board, y, x + 1);
 
         for (int i = 1; i <= 9; i++) {
@@ -49,16 +50,21 @@ class Sudoku {
             boolean[] used_rows = new boolean[9];
             boolean[] used_cols = new boolean[9];
             for (int j = 0; j < 9; j++) {
-                if (board[i][j] == 0 || board[j][i] == 0) return false;
-                if (used_rows[board[i][j] - 1] || used_cols[board[j][i] - 1]) return false;
-                used_rows[board[i][j] - 1] = true;
-                used_cols[board[j][i] - 1] = true;
+                if (board[i][j] != 0) {
+                    if (used_rows[board[i][j] - 1]) return false;
+                    used_rows[board[i][j] - 1] = true;
+                }
+                if (board[j][i] != 0) {
+                    if (used_cols[board[j][i] - 1]) return false;
+                    used_cols[board[j][i] - 1] = true;
+                }
             }
         }
 
         boolean[][][] used = new boolean[3][3][9];
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
+                if (board[y][x] == 0) continue;
                 int block_row = y / 3;
                 int block_col = x / 3;
                 if (used[block_row][block_col][board[y][x] - 1]) return false;
